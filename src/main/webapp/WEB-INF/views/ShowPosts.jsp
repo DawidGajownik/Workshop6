@@ -20,7 +20,7 @@
             <td><c:out value="${book.isbn}"/></td>
             <td><c:out value="${book.title}"/></td>
             <td><c:out value="${book.author}"/></td>
-            <td><a href="detailse/${book.id}">details</a> </td>
+            <td><a href="details/${book.id}">details</a> </td>
             <td><a href="update/${book.id}">edit</a></td>
             <td><a href="delete/${book.id}">delete</a></td>
         </tr>

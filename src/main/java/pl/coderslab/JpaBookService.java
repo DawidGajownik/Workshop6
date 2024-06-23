@@ -13,8 +13,8 @@ import java.util.Optional;
 @Transactional
 public class JpaBookService implements BookService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+//    @PersistenceContext
+//    private EntityManager entityManager;
     private final BookRepository bookRepository;
 
     public JpaBookService(BookRepository bookRepository) {
@@ -33,18 +33,24 @@ public class JpaBookService implements BookService {
 
     @Override
     public void add(Book book) {
-        entityManager.persist(book);
+        bookRepository.save(book);
+        //entityManager.persist(book);
     }
 
     @Override
     public void delete(Long id) {
-        Optional<Book> bookOpt = bookRepository.findById(id);
-        Book book = bookOpt.get();
-        entityManager.remove(entityManager.contains(book) ? book : entityManager.merge(book));
+        bookRepository.deleteById(id);
+//        Optional<Book> bookOpt = bookRepository.findById(id);
+//        if (bookOpt.isEmpty()) {
+//
+//        }
+//        Book book = bookOpt.get();
+//        entityManager.remove(entityManager.contains(book) ? book : entityManager.merge(book));
     }
 
     @Override
     public void update(Book book) {
-        entityManager.merge(book);
+        bookRepository.save(book);
+        //entityManager.merge(book);
     }
 }

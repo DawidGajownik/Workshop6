@@ -1,15 +1,13 @@
 package pl.coderslab;
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -19,7 +17,6 @@ import java.util.List;
 public class ManageBookController {
 
     private final BookService bookService;
-    private final ServletRequest httpServletRequest;
 
     @GetMapping("/all")
     public String showPosts(Model model) {
@@ -34,7 +31,6 @@ public class ManageBookController {
     }
     @PostMapping("/save")
     public String save (@ModelAttribute Book book)  {
-        log.info(book.toString());
         if (book.getId()==null){
             bookService.add(book);
         } else {
@@ -44,16 +40,31 @@ public class ManageBookController {
     }
     @GetMapping("/details/{id}")
     @ResponseBody
-    public String showBook (@PathVariable Long id) {
-        return bookService.get(id).get().toString();
+    public String showBook (@PathVariable Long id) throws NotFoundException {
+        Optional<Book> bookOptional = bookService.get(id);
+        if (bookOptional.isEmpty()){
+            throw new NotFoundException("Book not found");
+        }
+        Book book = bookOptional.get();
+        return book.toString();
     }
     @GetMapping("/update/{id}")
-    public String update (@PathVariable Long id, Model model) {
-        model.addAttribute("book",bookService.get(id).get());
+    public String update (@PathVariable Long id, Model model) throws NotFoundException {
+        Optional<Book> bookOptional = bookService.get(id);
+        if (bookOptional.isEmpty()){
+            throw new NotFoundException("Book not found");
+        }
+        Book book = bookOptional.get();
+        model.addAttribute("book",book);
         return "form";
     }
     @GetMapping("/delete/{id}")
-    public String delete (@PathVariable Long id) {
+    public String delete (@PathVariable Long id) throws NotFoundException {
+        Optional<Book> bookOptional = bookService.get(id);
+        if (bookOptional.isEmpty()){
+            throw new NotFoundException("Book not found");
+        }
+        Book book = bookOptional.get();
         bookService.delete(id);
         return "redirect:/books/all";
     }
